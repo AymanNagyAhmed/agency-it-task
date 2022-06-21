@@ -7,19 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
 
     public function register(Request $request)
     {
@@ -28,6 +17,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|min:6',
+            'is_admin' => 'boolean'
         ]);
 
         // Return errors if validation error occur.
@@ -37,16 +27,15 @@ class AuthController extends Controller
                 'error' => $errors
             ], 400);
         }
-
         // Check if validation pass then create user and auth token. Return the auth token
         if ($validator->passes()) {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password),
+                'is_admin' => $request->is_admin
             ]);
             $token = $user->createToken('auth_token')->plainTextToken;
-
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
@@ -65,43 +54,12 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'is_admin' => $user->is_admin,
         ]);
     }
+
     public function show(Request $request)
     {
         return $request->user();
-    }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }
