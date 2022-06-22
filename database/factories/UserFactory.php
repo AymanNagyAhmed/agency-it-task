@@ -17,7 +17,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => Str::random(6),
-            'email' => Str::random(5).'@gmail.com',
+            'email' => strtolower(Str::random(5).'@gmail.com'),
             'password' => Hash::make('password'), // password
         ];
     }
