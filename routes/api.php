@@ -35,12 +35,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/{id}", [ReviewController::class, "update"]);
         Route::delete("/{id}", [ReviewController::class, "delete"]);
     });
-    Route::group(['prefix'=>'feedback'],function () {
+    Route::group(['prefix'=>'feedbacks'],function () {
         Route::get("/", [FeedbackController::class, "index"]);
         Route::patch("/{id}", [FeedbackController::class, "update"]);
     });
-    Route::group(['prefix'=>'feedback',"middleware"=>"is_admin"],function () {
+    Route::group(['prefix'=>'feedbacks',"middleware"=>"is_admin"],function () {
+        Route::get("/", [FeedbackController::class, "index"]);
         Route::post("/", [FeedbackController::class, "create"]);
+        Route::get("/{id}", [FeedbackController::class, "show"]);
         Route::put("/{id}", [FeedbackController::class, "update"]);
         Route::delete("/{id}", [FeedbackController::class, "delete"]);
     });
