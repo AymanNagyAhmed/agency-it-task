@@ -15,7 +15,7 @@ class CreatefeedbacksTable extends Migration
     {
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->id();
-            $table->text('body');
+            $table->text('body')->nullable();
             $table->unsignedBigInteger('review_id');
             $table->index('review_id');
             $table->foreign('review_id')->references('id')->on('reviews')->onDelete('cascade');

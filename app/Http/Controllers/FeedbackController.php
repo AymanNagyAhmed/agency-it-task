@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Feedback;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
 {
@@ -13,7 +15,11 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        //
+        if (Auth::user()->is_admin){
+            return Feedback::all();
+        } else {
+            return Feedback::where("reviewer_id",Auth::user()->id)->get();
+        }
     }
 
     /**

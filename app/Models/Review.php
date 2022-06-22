@@ -13,7 +13,10 @@ class Review extends Model
         'body',
     ];
 
-    public function user(){
+    public function reviewer(){
+        return $this->belongsTo(User::class);
+    }
+    public function reviewee(){
         return $this->belongsTo(User::class);
     }
     public function feedbacks(){
