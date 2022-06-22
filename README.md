@@ -20,4 +20,10 @@ refer to [this guide](https://docs.docker.com/engine/install/) for more info
 ```bash
 ./vendor/bin/sail php artisan db:seed --class=DatabaseSeeder
 ```
+## Generating Documentation
+```bash
+docker pull phpdoc/phpdoc
+docker run --rm -v $(pwd):/data phpdoc/phpdoc run -d ./app -t ./output_doc
+sudo chown -R $USER:$USER ./output_doc # to fix user permission from docker
+```
 
