@@ -19,18 +19,19 @@ class UserController extends Controller
     {
         $users = User::all();
         if (is_null($users)){
-            return response()->json(["msg"=>"no users found"]);
+            return response()->json(["users"=>[]]);
         }
         return  response()->json(["users"=>$users]);
     }
 
     /**
-     * create a newly created resource in storage.
+     * create a new user and store to databases.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * @api
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         // Validate request data
         $validator = Validator::make($request->all(), [
@@ -62,46 +63,42 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  User $user
+     * @return \Illuminate\Http\Response user in json format
+     * @api
      */
-    public function show($id)
+    public function show(User $user)
     {
-        return User::find($id);
+        return $user;
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified user in database.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  User $user User to be updated
      * @return \Illuminate\Http\Response
+     * @api
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        dd($request['name']);
 
-        User::where('id', '=', $id)->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
-        return response()->json([
-            'msg' => 'done'
-        ], 200);
+        $user->update($request->all());
+
+        return $user;
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified user from database.
      *
-     * @param  int  $id
+     * @param  User  $user User to be deleted
      * @return \Illuminate\Http\Response
+     * @api
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        $user = User::find($id);
         $user->delete();
 
         return response()->json(["msg"=>"User Deleted Successfully."]);

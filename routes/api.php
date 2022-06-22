@@ -18,9 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix'=>'admin','middleware'=>'is_admin'],function () {
         Route::get('users-list', [UserController::class,'index'])->name('users-list');
-        Route::get('user/{id}', [UserController::class,'show'])->name('show-user-byid');
-        Route::put('user/{id}', [UserController::class,'update'])->name('update-user');
-        Route::delete('user/{id}', [UserController::class,'destroy'])->name('destroy-user');
+        Route::resource("user", UserController::class);
+
 
     });
     Route::group(['prefix'=>'user'],function () {
