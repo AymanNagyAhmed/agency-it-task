@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Feedback;
 use App\Models\Review;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,5 +46,8 @@ class User extends Authenticatable
 
     public function reviews(){
         return $this->hasMany(Review::class);
+    }
+    public function feedbacks(){
+        return $this->hasMany(Feedback::class);
     }
 }
