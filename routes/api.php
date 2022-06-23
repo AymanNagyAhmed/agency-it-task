@@ -30,24 +30,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::group(['prefix' => 'reviews'], function () {
         Route::get("/", [ReviewController::class, "index"]);
-        Route::get("/{id}", [ReviewController::class, "show"]);
+        Route::get("/{review}", [ReviewController::class, "show"]);
     });
     Route::group(['prefix' => 'reviews', "middleware" => "is_admin"], function () {
         Route::post("/", [ReviewController::class, "store"]);
-        Route::patch("/{id}", [ReviewController::class, "update"]);
-        Route::put("/{id}", [ReviewController::class, "update"]);
-        Route::delete("/{id}", [ReviewController::class, "destroy"]);
+        Route::patch("/{review}", [ReviewController::class, "update"]);
+        Route::put("/{review}", [ReviewController::class, "update"]);
+        Route::delete("/{review}", [ReviewController::class, "destroy"]);
     });
 
     Route::group(['prefix' => 'feedbacks'], function () {
         Route::get("/", [FeedbackController::class, "index"]);
-        Route::patch("/{id}", [FeedbackController::class, "update"]);
+        Route::patch("/{feedback}", [FeedbackController::class, "update"]);
     });
     Route::group(['prefix' => 'feedbacks', "middleware" => "is_admin"], function () {
         Route::post("/", [FeedbackController::class, "store"]);
-        Route::get("/{id}", [FeedbackController::class, "show"]);
-        Route::put("/{id}", [FeedbackController::class, "update"]);
-        Route::delete("/{id}", [FeedbackController::class, "destroy"]);
+        Route::get("/{feedback}", [FeedbackController::class, "show"]);
+        Route::put("/{feedback}", [FeedbackController::class, "update"]);
+        Route::delete("/{feedback}", [FeedbackController::class, "destroy"]);
     });
 });
 

@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Validator;
-
-use Illuminate\Http\Request;
+use App\Http\Requests\ReviewRequest\ShowReviewRequest;
+use App\Http\Requests\ReviewRequest\StoreReviewRequest;
+use App\Http\Requests\ReviewRequest\UpdateReviewRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Review;
+
 class ReviewController extends Controller
 {
     /**
@@ -16,11 +17,11 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->is_admin){
+        if (Auth::user()->is_admin) {
             return Review::all();
         } else {
-            return Review::whereHas("feedbacks",function($feedbacks) {
-                $feedbacks->where("reviewer_id",Auth::user()->id);
+            return Review::whereHas("feedbacks", function ($feedbacks) {
+                $feedbacks->where("reviewer_id", Auth::user()->id);
             })->get();
         }
     }
@@ -31,86 +32,54 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreReviewRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'body' => 'required',
-            'reviewee_id' => 'required|integer',
+        $validated = $request->validated();
+        Review::create([
+            ...$validated,
+            "reviewer_id" => Auth::user()->id
         ]);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json([
-                'error' => $errors
-            ], 400);
-        }
-        if ($validator->passes()) {
-            Review::create([
-                "body"=> $request->body,
-                "reviewee_id"=> $request->reviewee_id,
-                "reviewer_id" => Auth::user()->id
-            ]);
-            return response()->json([
-                'message' => 'created successfully',
-            ]);
-        }
+        return response()->json([
+            'message' => 'created successfully',
+        ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  Review $review
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(ShowReviewRequest $request, Review $review)
     {
-        $review =  Review::find($id);
-        if ($request->user()->cannot('view', $review)) {
-            abort(403);
-        }
-        return Review::find($id);
+        return $review;
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Review $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateReviewRequest $request, Review $review)
     {
-        $review = Review::find($id);
-        $validator = Validator::make($request->all(), [
-            'body' => 'required|string',
+        $validated = $request->validated();
+        $review->update($validated);
+        return response()->json([
+            'message' => 'updated successfully',
         ]);
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json([
-                'error' => $errors
-            ], 400);
-        }
-        if ($validator->passes()) {
-            $review->update([
-                "body"=> $request->body
-            ]);
-            return response()->json([
-                'message' => 'updated successfully',
-            ]);
-        }
-
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Review $review
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Review $review)
     {
-        $review=Review::find($id);
         $review->delete();
-        return response()->json(["message"=>"review Deleted Successfully."]);
+        return response()->json(["message" => "review Deleted Successfully."]);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FeedbackRequest\ShowFeedbackRequest;
+use App\Http\Requests\FeedbackRequest\StoreFeedbackRequest;
+use App\Http\Requests\FeedbackRequest\UpdateFeedbackRequest;
 use App\Models\Feedback;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class FeedbackController extends Controller
 {
     /**
@@ -17,10 +17,10 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->is_admin){
+        if (Auth::user()->is_admin) {
             return Feedback::all();
         } else {
-            return Feedback::where("reviewer_id",Auth::user()->id)->get();
+            return Feedback::where("reviewer_id", Auth::user()->id)->get();
         }
     }
 
@@ -31,91 +31,51 @@ class FeedbackController extends Controller
      * @return \Illuminate\Http\Response
      * @api
      */
-    public function store(Request $request)
+    public function store(StoreFeedbackRequest $request)
     {
-        // Validate request data
-        $validator = Validator::make($request->all(), [
-            'body' => 'nullable',
-            'review_id' => 'required|integer',
-            'reviewer_id' => 'required|integer',
+        $validated = $request->validated();
+        Feedback::create($validated);
+        return response()->json([
+            'message' => 'created successfully',
         ]);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json([
-                'error' => $errors
-            ], 400);
-        }
-        if ($validator->passes()) {
-            Feedback::create([
-                "body"=> $request->body,
-                "review_id"=>$request->review_id,
-                "reviewer_id"=> $request->reviewer_id
-            ]);
-            return response()->json([
-                'message' => 'created successfully',
-            ]);
-        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  Feedback $feedback
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(ShowFeedbackRequest $request, Feedback $feedback)
     {
-        $feedback =  Feedback::find($id);
-        if ($request->user()->cannot('view', $feedback)) {
-            abort(403);
-        }
-        return Feedback::find($id);
+        return $feedback;
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Feedback $feedback
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateFeedbackRequest $request, Feedback $feedback)
     {
-        $feedback =  Feedback::find($id);
-        if ($request->user()->cannot('update', $feedback)) {
-            abort(403);
-        }
-        $validator = Validator::make($request->all(), [
-            'body' => 'required|string',
-        ]);
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json([
-                'error' => $errors
-            ], 400);
-        }
-        if ($validator->passes()) {
-            $feedback->update([
-                "body"=> $request->body
-            ]);
+        $validated = $request->validated();
+            $feedback->update($validated);
             return response()->json([
                 'message' => 'updated successfully',
             ]);
-        }
-
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Feedback $feedback
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Feedback $feedback)
     {
-        $feedback=Feedback::find($id);
         $feedback->delete();
-        return response()->json(["msg"=>"feedback Deleted Successfully."]);
+        return response()->json(["msg" => "feedback Deleted Successfully."]);
     }
 }
