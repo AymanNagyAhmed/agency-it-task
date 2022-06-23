@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest\StoreUserRequest;
+use App\Http\Requests\UserRequest\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,10 +21,10 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        if (is_null($users)){
-            return response()->json(["users"=>[]]);
+        if (is_null($users)) {
+            return response()->json(["users" => []]);
         }
-        return  response()->json(["users"=>$users]);
+        return  response()->json(["users" => $users]);
     }
 
     /**
@@ -32,35 +34,14 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      * @api
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        // Validate request data
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|min:6',
-            'is_admin' => 'boolean'
-        ]);
-
-        // Return errors if validation error occur.
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json([
-                'error' => $errors
-            ], 400);
-        }
-        // Check if validation pass then create user and auth token. Return the auth token
-        if ($validator->passes()) {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'is_admin' => $request->is_admin
-            ]);
-            return response()->json([
-                'message' => 'created successfully',
-            ]);
-        }
+        $validated = $request->validated();
+        $validated["password"] = Hash::make($validated["password"]);
+        $user = User::create($validated);
+        return response()->json([
+            'message' => 'created successfully',
+        'user'=>$user]);
     }
 
     /**
@@ -83,11 +64,13 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      * @api
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-
-        $user->update($request->all());
-
+        $validated = $request->validated();
+        if (array_key_exists("password",$validated)) {
+            $validated["password"] = Hash::make($validated["password"]);
+        }
+        $user->update($validated);
         return $user;
     }
 
@@ -101,7 +84,6 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-
-        return response()->json(["msg"=>"User Deleted Successfully."]);
+        return response()->json(["message" => "User Deleted Successfully."]);
     }
 }
