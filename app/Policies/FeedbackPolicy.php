@@ -53,7 +53,7 @@ class FeedbackPolicy
      */
     public function update(User $user, Feedback $feedback)
     {
-        return $user->is_admin || ($user->id == $feedback->reviewer_id && $feedback->body);
+        return $user->is_admin || ($user->id == $feedback->reviewer_id && !$feedback->body);
     }
 
     /**
