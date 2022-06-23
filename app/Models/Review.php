@@ -9,8 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     use HasFactory;
+
+    protected $table= "reviews";
     protected $fillable = [
         'body',
+        'reviewee_id',
+        'reviewer_id'
     ];
 
     public function reviewer(){

@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Feedback;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class FeedbackPolicy
+class ReviewPolicy
 {
     use HandlesAuthorization;
 
@@ -18,19 +18,25 @@ class FeedbackPolicy
      */
     public function viewAny(User $user)
     {
-        return true; // filtered through the controller
+        //
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Feedback  $feedback
+     * @param  \App\Models\Review  $review
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Feedback $feedback)
+    public function view(User $user, Review $review)
     {
-        return $user->is_admin || $user->id == $feedback->reviewer_id;
+        $flag = false;
+        foreach ($review->feedbacks() as $feedback){
+            if($feedback->reviewr_id == $user->id ){
+                $flag = true;
+            }
+        }
+        return $user->is_admin || $flag;
     }
 
     /**
@@ -41,54 +47,54 @@ class FeedbackPolicy
      */
     public function create(User $user)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Feedback  $feedback
+     * @param  \App\Models\Review  $review
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Feedback $feedback)
+    public function update(User $user, Review $review)
     {
-        return $user->is_admin || ($user->id === $feedback->reviewer_id && !$feedback->body);
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Feedback  $feedback
+     * @param  \App\Models\Review  $review
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Feedback $feedback)
+    public function delete(User $user, Review $review)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Feedback  $feedback
+     * @param  \App\Models\Review  $review
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Feedback $feedback)
+    public function restore(User $user, Review $review)
     {
-        return $user->is_admin;
+        //
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Feedback  $feedback
+     * @param  \App\Models\Review  $review
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Feedback $feedback)
+    public function forceDelete(User $user, Review $review)
     {
-        return $user->is_admin;
+        //
     }
 }

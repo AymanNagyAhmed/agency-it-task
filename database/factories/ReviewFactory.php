@@ -13,10 +13,13 @@ class ReviewFactory extends Factory
      */
     public function definition()
     {
+        $min = 2;
+        $number_of_users_in_seed = 11;
+        $admin_id = 12;
         return [
             'body' => "test review is required",
-            "reviewer_id"=> 12,
-            "reviewee_id"=>2,
+            "reviewer_id"=> $admin_id,
+            "reviewee_id"=>rand( $min, $number_of_users_in_seed),
         ];
     }
 }

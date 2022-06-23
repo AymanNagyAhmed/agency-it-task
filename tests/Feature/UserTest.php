@@ -28,7 +28,7 @@ class UserTest extends TestCase
      */
     public function test_show_user_employee_login()
     {
-        $non_admin = User::factory()->make(["name" => "user_test", "is_admin" => false]);
+        $non_admin = User::factory()->create(["name" => "user_test", "is_admin" => false]);
         $response = $this->actingAs($non_admin)->json("GET", "/api/admin/user/1/");
         $response->assertStatus(403);
     }
@@ -41,7 +41,7 @@ class UserTest extends TestCase
     {
         $id = 3;
         $user = User::find($id);
-        $admin = User::factory()->make(["name" => "admin_test", "is_admin" => true]);
+        $admin = User::factory()->create(["name" => "admin_test", "is_admin" => true]);
         $response = $this->actingAs($admin)->json("GET", "/api/admin/user/$id/");
         $response->assertStatus(200);
         $response->assertJson(["name" => $user->name]);
@@ -53,18 +53,18 @@ class UserTest extends TestCase
     }
     public function test_list_users_employee_login()
     {
-        $non_admin = User::factory()->make(["name" => "user_test", "is_admin" => false]);
+        $non_admin = User::factory()->create(["name" => "user_test", "is_admin" => false]);
         $response = $this->actingAs($non_admin)->json("GET", "/api/admin/users-list");
         $response->assertStatus(403);
     }
     public function test_list_user_login()
     {
         $seeder_count = 12;
-        $admin = User::factory()->make(["name" => "admin_test", "is_admin" => true]);
+        $admin = User::factory()->create(["name" => "admin_test", "is_admin" => true]);
         $response = $this->actingAs($admin)->json("GET", "/api/admin/users-list");
         $response->assertStatus(200);
-        $this->assertDatabaseCount("users", $seeder_count);
-        $response->assertJsonCount($seeder_count, "users");
+        $this->assertDatabaseCount("users", $seeder_count + 1);
+        $response->assertJsonCount($seeder_count + 1, "users");
     }
 
 
@@ -81,7 +81,7 @@ class UserTest extends TestCase
     {
         $id = 3;
         $user_old = User::find($id);
-        $non_admin = User::factory()->make(["name" => "user_test", "is_admin" => false]);
+        $non_admin = User::factory()->create(["name" => "user_test", "is_admin" => false]);
         $response = $this->actingAs($non_admin)->json("PATCH", "/api/admin/user/$id", ["name" => "test_user"]);
         $response->assertStatus(403);
         $user_updated = User::find($id);
@@ -90,7 +90,7 @@ class UserTest extends TestCase
     public function test_update_user_login()
     {
         $id = 3;
-        $admin = User::factory()->make(["name" => "admin_test", "is_admin" => true]);
+        $admin = User::factory()->create(["name" => "admin_test", "is_admin" => true]);
         $response =  $this->actingAs($admin)->json("PATCH", "/api/admin/user/$id", ["name" => "test_user"]);
         $response->assertStatus(200);
         $user_updated = User::find($id);
@@ -107,7 +107,7 @@ class UserTest extends TestCase
     public function test_delete_user_login()
     {
         $id = 3;
-        $admin = User::factory()->make(["name" => "admin_test", "is_admin" => true]);
+        $admin = User::factory()->create(["name" => "admin_test", "is_admin" => true]);
         $response = $this->actingAs($admin)->json("DELETE", "/api/admin/user/$id");
         $response->assertStatus(200);
         $this->assertDatabaseMissing("users", ["id" => $id]);
@@ -115,7 +115,7 @@ class UserTest extends TestCase
     public function test_delete_user_emoloyee_login()
     {
         $id = 3;
-        $non_admin = User::factory()->make(["name" => "user_test", "is_admin" => false]);
+        $non_admin = User::factory()->create(["name" => "user_test", "is_admin" => false]);
         $response = $this->actingAs($non_admin)->json("DELETE", "/api/admin/user/$id");
         $response->assertStatus(403);
         $this->assertDatabaseHas("users", ["id" => $id]);
@@ -135,7 +135,7 @@ class UserTest extends TestCase
     public function test_create_user_employee_login()
     {
         $seeder_count = 12;
-        $non_admin = User::factory()->make(["name" => "user_test", "is_admin" => false]);
+        $non_admin = User::factory()->create(["name" => "user_test", "is_admin" => false]);
         $response = $this->actingAs($non_admin)->json("POST", "/api/admin/user", [
             "name" => "test_user",
             'email' => "test@test.com",
@@ -143,13 +143,13 @@ class UserTest extends TestCase
             "is_admin" => false
         ]);
         $response->assertStatus(403);
-        $this->assertDatabaseCount("users", $seeder_count);
+        $this->assertDatabaseCount("users", $seeder_count + 1);
 
     }
     public function test_create_user_login()
     {
         $seeder_count = 12;
-        $admin = User::factory()->make(["name" => "admin_test", "is_admin" => true]);
+        $admin = User::factory()->create(["name" => "admin_test", "is_admin" => true]);
         $response = $this->actingAs($admin)->json("POST", "/api/admin/user", [
             "name" => "test_user",
             'email' => "test@test.com",
@@ -157,7 +157,7 @@ class UserTest extends TestCase
             "is_admin" => false
         ]);
         $response->assertStatus(200);
-        $this->assertDatabaseCount("users", $seeder_count +1);
+        $this->assertDatabaseCount("users", $seeder_count +2);
     }
 
     protected $seed = true;

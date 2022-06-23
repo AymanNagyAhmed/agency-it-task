@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Feedback;
+use App\Models\Review;
+use App\Policies\FeedbackPolicy;
+use App\Policies\ReviewPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,7 +17,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-         'App\Models\Feedback' => 'App\Policies\FeedbackPolicy',
+         Feedback::class => FeedbackPolicy::class,
+         Review::class => ReviewPolicy::class,
     ];
 
     /**
